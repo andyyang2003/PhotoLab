@@ -1,6 +1,6 @@
 /*********************************************************/
-/* Constants.h: header file for constant definitions used in PhotoLab
-/* author: Andy Yang
+/* Constants.h: header file for constant definitions used in PhotoLab*/
+/* author: Andy Yang */
 /*********************************************************/
 #ifndef CONSTANTS_H
 

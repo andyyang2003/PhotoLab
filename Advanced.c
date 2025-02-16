@@ -16,15 +16,15 @@ void MotionBlur(int BlurAmount, unsigned char R[WIDTH][HEIGHT], unsigned char G[
     int RRAverage, RGAverage, RBAverage;
     int Rsum, Gsum, Bsum;
     
-    for (int x = 0; x < WIDTH; x++)
+    for (int x = 0; x < WIDTH - 1; x++)
     {
         for (int y = 0; y < HEIGHT; y++)
         {   
             Rsum = Gsum = Bsum = 0;
             //first make sure the fixed number of pixels to the right is not off bounds
-            Ramount = ((x + BlurAmount) < WIDTH) ? (BlurAmount) : (WIDTH - x); 
+            Ramount = ((x + BlurAmount) < WIDTH) ? (BlurAmount) : (WIDTH - x - 1); 
             // then find the sum of each of the values to the right by Ramount
-            for (int i = 0; i < Ramount; i++)
+            for (int i = 1; i <= Ramount; i++)
             {
                Rsum += R[x+i][y];
                Gsum += G[x+i][y];
@@ -33,9 +33,9 @@ void MotionBlur(int BlurAmount, unsigned char R[WIDTH][HEIGHT], unsigned char G[
             // whenever dividing always check divisor is not 0!!!!!!
             if (Ramount > 0)
             {
-                RRAverage = Rsum / Ramount + 1;
-                RGAverage = Gsum / Ramount + 1;
-                RBAverage = Bsum / Ramount + 1;
+                RRAverage = Rsum / Ramount;
+                RGAverage = Gsum / Ramount;
+                RBAverage = Bsum / Ramount;
             }
             else
             {
@@ -45,6 +45,7 @@ void MotionBlur(int BlurAmount, unsigned char R[WIDTH][HEIGHT], unsigned char G[
             R[x][y] = 0.5 * R[x][y] + 0.5 * (int)RRAverage;  
             G[x][y] = 0.5 * G[x][y] + 0.5 * (int)RGAverage;
             B[x][y] = 0.5 * B[x][y] + 0.5 * (int)RBAverage;
+            
         }
         
     }
@@ -135,7 +136,7 @@ void Posterize(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], u
     }
     
 }
-void FishEye(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT], double distortion_factor, double scaling_factor, double k)
+void FishEye(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT], double base_factor, double k, double scaling_factor)
 {
     unsigned char R_out[WIDTH][HEIGHT], G_out[WIDTH][HEIGHT], B_out[WIDTH][HEIGHT];
     int center_x = WIDTH/2;
@@ -153,7 +154,7 @@ void FishEye(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], uns
             
             distortion = (1 + k * radius * radius);
             theta = atan2(dy, dx);
-            new_radius = (radius * distortion_factor) / (distortion * scaling_factor);
+            new_radius = (radius * base_factor) / (distortion * scaling_factor);
             
             x_src_d = (center_x + new_radius*cos(theta)*center_x); //floats cannot use as index
             y_src_d = (center_y + new_radius*sin(theta)*center_y); 

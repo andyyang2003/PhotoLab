@@ -14,13 +14,6 @@
 #include "FileIO.h"
 #include "Advanced.h"
 
-#define DDEBUG 
-// MDEBUG for not having to user input menu, if defined then dont take user input
-
-				/* maximum length of file names and string*/
-
-
-
 /* Print Menu Function */
 void PrintMenu();
 /* Test all functions */
@@ -30,14 +23,11 @@ int main() {
 	unsigned char   R[WIDTH][HEIGHT];	/* use three 2-D arrays to store R, G, B components */
 	unsigned char   G[WIDTH][HEIGHT];
 	unsigned char   B[WIDTH][HEIGHT];
-
+  #ifndef DEBUG 
 	int option;			/* user input option */
 	char fname[SLEN];		/* input file name */
 	char colorOption[SLEN];
 
-	PrintMenu();
-	printf("Please make your choice: ");
-	scanf("%d", &option);
 
 	int r24 = -1;			/* return code of LoadImage() */
 	/* ColorFilter() parameters */
@@ -46,20 +36,23 @@ int main() {
 	/* AddBorder() parameter */
 	int border_width;
  
-    double distortion_factor, scaling_factor, k;
-    unsigned int rbits, gbits, bbits; 
-    
-    double Angle, ScaleFactor;
-    int CenterX, CenterY;
-    int blurAmount;
+  double distortion_factor, scaling_factor, k;
+  unsigned int rbits, gbits, bbits; 
+  
+  double Angle, ScaleFactor;
+  int CenterX, CenterY;
+  int blurAmount;
+  PrintMenu();
+	printf("Please make your choice: ");
+	scanf("%d", &option);
 	while (option != EXIT) {
 		if (option == 1) {
 			printf("Please input the file name to load: ");
 			scanf("%75s", fname);
 			r24 = LoadImage(fname, R, G, B);
-		}
-		/* menu item 2 - 10 requires image is loaded first */
-		else if (option >= 2 && option <= 15) {
+		} /* END */
+		/* menu item 2 - 14 requires image is loaded first */
+		else if (option >= 2 && option <= 14) {
 			if (r24 != SUCCESS)	 {
 				printf("No image is read.\n");
 			}
@@ -122,70 +115,58 @@ int main() {
 						AddBorder(R, G, B, colorOption, border_width);
 						printf("\"Border\" operation is done!\n");
 						break;
-                     case 11:
-                        #ifndef MDEBUG 
-                        printf("Enter a value for distortion factor: "); 
-                        scanf("%lf", &distortion_factor);
-                        printf("Enter a value for scaling factor: "); 
-                        scanf("%lf", &scaling_factor);
-                        printf("Enter a value for k: "); 
-                        scanf("%lf", &k);
-                        #endif
-                        #ifdef MDEBUG
-                        k = 0.5;
-                        distortion_factor = 0.5;
-                        scaling_factor = 1.5;
-                        #endif
-                        printf("\"Fisheye\" operation is done!\n");
-                        FishEye(R, G, B, distortion_factor, scaling_factor, k);
-                        
-                        break;
-                     case 12:
-                        printf("Enter the number of posterization bits for R channel (1 to 8): ");
-                        scanf("%ud", &rbits);
-                        printf("Enter the number of posterization bits for G channel (1 to 8): ");
-                        scanf("%ud", &gbits);
-                        printf("Enter the number of posterization bits for B channel (1 to 8): ");
-                        scanf("%ud", &bbits);
-                        Posterize(R, G, B, rbits, gbits, bbits);
-                        printf("\"Posterize\" operation is done!\n");
-                        break;  
-                     case 13:
-                        #ifndef MDEBUG
-                        printf("Enter the angle of rotation: ");
-                        scanf("%lf", &Angle);
-                        printf("Enter the scale of zooming: ");
-                        scanf("%lf", &ScaleFactor);
-                        printf("Enter the X-axis coordinate of the center of rotation: ");
-                        scanf("%d", &CenterX);
-                        printf("Enter the Y-axis coordinate of the center of rotation:  ");
-                        scanf("%d", &CenterY);
-                        #endif
-                        #ifdef MDEBUG
-                        Angle = 22;
-                        ScaleFactor = 0.78;
-                        CenterX = 110;
-                        CenterY = 220;
-                        #endif
-                        Rotate(R, G, B, Angle, ScaleFactor, CenterX, CenterY);
-                        printf("\"Rotate\" operation is done!\n");
-                        break;
-                     case 14:
-                        printf("Please input blur amount: ");
-                        scanf("%d", &blurAmount);
-                        MotionBlur(blurAmount, R, G, B);
-                        printf("\"Motion Blur\" operation is done!\n");
-                        break;
+           case 11:
+              printf("Enter a value for distortion factor: "); 
+              scanf("%lf", &distortion_factor);
+              printf("Enter a value for scaling factor: "); 
+              scanf("%lf", &scaling_factor);
+              printf("Enter a value for k: "); 
+              scanf("%lf", &k);
+              printf("\"Fisheye\" operation is done!\n");
+              FishEye(R, G, B, distortion_factor, scaling_factor, k);
+              break;
+           case 12:
+              printf("Enter the number of posterization bits for R channel (1 to 8): ");
+              scanf("%ud", &rbits);
+              printf("Enter the number of posterization bits for G channel (1 to 8): ");
+              scanf("%ud", &gbits);
+              printf("Enter the number of posterization bits for B channel (1 to 8): ");
+              scanf("%ud", &bbits);
+              Posterize(R, G, B, rbits, gbits, bbits);
+              printf("\"Posterize\" operation is done!\n");
+              break;  
+           case 13:
+              printf("Enter the angle of rotation: ");
+              scanf("%lf", &Angle);
+              printf("Enter the scale of zooming: ");
+              scanf("%lf", &ScaleFactor);
+              printf("Enter the X-axis coordinate of the center of rotation: ");
+              scanf("%d", &CenterX);
+              printf("Enter the Y-axis coordinate of the center of rotation:  ");
+              scanf("%d", &CenterY);
+              Rotate(R, G, B, Angle, ScaleFactor, CenterX, CenterY);
+              printf("\"Rotate\" operation is done!\n");
+              break;
+           case 14:
+              printf("Please input blur amount: ");
+              scanf("%d", &blurAmount);
+              MotionBlur(blurAmount, R, G, B);
+              printf("\"Motion Blur\" operation is done!\n");
+              break;
 					default:
 						break;
-				}
-			}
-		}
+				} /* END SWITCH CASE */
+			} /* END ELSE FOR LOADED IMAGE REQUIREMENT */
+		} /* END ELSE IF FOR OPTION 2 to 14 */
          
 		else if (option == 15) {
 			AutoTest(R, G, B);
 			r24 = SUCCESS;	/* set returned code SUCCESS, since image is loaded */
 		}
+    else if (option == 16)
+    {
+      exit(0);
+    }
 
 		else {
 			printf("Invalid selection!\n");
@@ -196,6 +177,10 @@ int main() {
 		printf("Please make your choice: ");
 		scanf("%d", &option);
 	}
+#endif
+#ifdef DEBUG
+  AutoTest(R, G, B);
+#endif
 	printf("You exit the program.\n");
 	return 0;
 }
@@ -218,10 +203,10 @@ void PrintMenu() {
 	printf(" 8: Flip an image vertically\n");
 	printf(" 9: Mirror an image horizontally\n");
 	printf("10: Add border to an image\n");
-    printf("11: Create a fisheye image\n");
-    printf("12: Posterize an image\n");
-    printf("13: Rotate and zoom an image\n");
-    printf("14: Motion Blur\n"); 
+  printf("11: Create a fisheye image\n");
+  printf("12: Posterize an image\n");
+  printf("13: Rotate and zoom an image\n");
+  printf("14: Motion Blur\n"); 
 	printf("15: Test all functions\n");
 	printf("16: Exit\n");
 }
@@ -239,7 +224,7 @@ void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], un
 	printf("Negative tested!\n\n");
 
 	LoadImage(fname, R, G, B);
-	ColorFilter(R, G, B, 250, 250, 250, 60, 0, 0, 255);
+	ColorFilter(R, G, B, 130, 130, 150, 30, 0, 255, 255);
 	strcpy(sname, "colorfilter");
 	SaveImage(sname, R, G, B);
 	printf("Color Filter tested!\n\n");
@@ -257,10 +242,10 @@ void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], un
 	printf("HMirror tested!\n\n");
 
 	LoadImage(fname, R, G, B);
-	AddBorder (R, G, B, "orange", 32);
-	strcpy(sname, "border");
+	Pixelate (R, G, B, 4);
+	strcpy(sname, "pixelate");
 	SaveImage(sname, R, G, B);
-	printf("Border tested!\n\n");
+	printf("Pixelate tested!\n\n");
 
 	LoadImage(fname, R, G, B);
 	BlackNWhite(R, G, B);
@@ -280,8 +265,9 @@ void AutoTest(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], un
 	SaveImage(sname, R, G, B);
 	printf("Shuffle tested!\n\n");
 	
+	
 	LoadImage(fname, R, G, B);
-	FishEye(R, G, B, 0.5, 2.0);
+	FishEye(R, G, B, 0.5, 0.5, 1.5);
 	strcpy(sname, "fisheye");
 	SaveImage(sname, R, G, B);
 	printf("Fisheye tested!\n\n");

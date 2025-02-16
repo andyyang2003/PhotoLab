@@ -2,9 +2,11 @@
 //
 #include "DIPs.h"
 #include "Constants.h"
+
 #include <string.h>
-#include <time.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 /* reverse image color */
 void Negative(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT]) {
 	int x, y;
@@ -105,7 +107,42 @@ void HMirror(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], uns
 		}
 	}
 }
+void Pixelate(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT], int block_size)
+{
+    int x, y, bx, by;
+    int sumR, sumG, sumB;
+    int count;
 
+    for (y = 0; y < HEIGHT - HEIGHT % block_size; y += block_size) {
+        for (x = 0; x < WIDTH - WIDTH % block_size; x += block_size) {
+            sumR = sumG = sumB = 0; // initialize
+            count = 0;
+
+            for (by = 0; by < block_size; by++) {
+                for (bx = 0; bx < block_size; bx++) {
+                    sumR += R[x + bx][y + by];
+                    sumG += G[x + bx][y + by];
+                    sumB += B[x + bx][y + by];
+                    count++;
+                }
+            }
+
+            // calculate average RGB value
+            sumR = sumR / count;
+            sumG = sumG / count;
+            sumB = sumB / count;
+
+            // write new values to pixels in the block
+            for (by = 0; by < block_size; by++) {
+                for (bx = 0; bx < block_size; bx++) {
+                    R[x + bx][y + by] = sumR;
+                    G[x + bx][y + by] = sumG;
+                    B[x + bx][y + by] = sumB;
+                }
+            }
+        }
+    }
+}
 /* add border to the image */
 void AddBorder(unsigned char R[WIDTH][HEIGHT], unsigned char G[WIDTH][HEIGHT], unsigned char B[WIDTH][HEIGHT],
 		char color[SLEN], int border_width) {
